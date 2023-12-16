@@ -43,7 +43,7 @@ def checkAppleCoords(x, y, snakeBody, snakeHead, cell_size, width, height):
 if __name__ == "__main__":
     #initializing window
     pygame.init()
-    width, height = 1000, 800
+    width, height = 900, 900
     screen = pygame.display.set_mode((width,height))
     clock = pygame.time.Clock()
     running = True
@@ -52,10 +52,11 @@ if __name__ == "__main__":
     fps = 30
     last_key = None
     frame_counter=0
+    bufferedKeys = []
 
     #snake vars
     speed = 5
-    cell_size = 50
+    cell_size = 100
     snakeHead_pos = pygame.Vector2(150, 400)
     movement = pygame.Vector2(0, 0)
     body = [pygame.Vector2(100,400), pygame.Vector2(50, 400)]
@@ -65,34 +66,23 @@ if __name__ == "__main__":
     apple_pos = pygame.Vector2(700, 400)
 
     while running:
-        dt = clock.tick(fps) / 1000.0
+        clock.tick(fps)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.KEYDOWN:
+                if len(bufferedKeys)==0 or event.key != bufferedKeys[-1]:
+                        bufferedKeys.append(event.key)
         
-        keys = pygame.key.get_pressed()
-        
-        for key in (pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d):
-            if keys[key]:
-                last_key = key
-        
-        #makes sure snake cant move directly in the oppisote direction snake is going
-        if last_key== pygame.K_w and movement.y != 1:
-            movement.y = -1
-            movement.x = 0
-        elif last_key== pygame.K_s and movement.y != -1:
-            movement.y = 1     
-            movement.x = 0 
-        elif last_key== pygame.K_a and movement.x != 1:
-            movement.x = -1
-            movement.y = 0 
-        elif last_key== pygame.K_d and movement.x != -1:
-            movement.x = 1
-            movement.y = 0 
+        #keys = pygame.key.get_pressed()
             
         frame_counter+=1
         if(frame_counter>=4):
+        
+            #for key in (pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d):
+                #if keys[key]:
+                    #bufferedKeys.append(key)
             for part in body:
                 #if collides withs body and snake is moving
                 if snakeHead_rect.colliderect(pygame.Vector2(part).x, pygame.Vector2(part).y, cell_size, cell_size) and (movement.x!=0 or movement.y!=0):
@@ -102,20 +92,39 @@ if __name__ == "__main__":
             if(movement.x!=0 or movement.y!=0):
                 body.append(pygame.Vector2(snakeHead_pos))
                 body.pop(0)
+                
             
-            #checks heads position and ends if it is at the edge and moving off screen
-            if((snakeHead_pos.x >0 and snakeHead_pos.x < width-50) or ((snakeHead_pos.x<=50 and movement.x != -1) or (snakeHead_pos.x>= width-50 and movement.x != 1))):
+            if len(bufferedKeys)>0:
+            #makes sure snake cant move directly in the oppisote direction snake is going
+                if (bufferedKeys[0] == pygame.K_w or bufferedKeys[0] == pygame.K_UP) and movement.y != 1:
+                    movement.y = -1
+                    movement.x = 0
+                elif (bufferedKeys[0] == pygame.K_s or bufferedKeys[0] == pygame.K_DOWN) and movement.y != -1:
+                    movement.y = 1     
+                    movement.x = 0 
+                elif (bufferedKeys[0] == pygame.K_a or bufferedKeys[0] == pygame.K_LEFT) and movement.x != 1:
+                    movement.x = -1
+                    movement.y = 0 
+                elif (bufferedKeys[0] == pygame.K_d or bufferedKeys[0] == pygame.K_RIGHT) and movement.x != -1:
+                    movement.x = 1
+                    movement.y = 0
+            
+                #checks heads position and ends if it is at the edge and moving off screen
+            if((snakeHead_pos.x >0 and snakeHead_pos.x < width-cell_size) or ((snakeHead_pos.x<=cell_size and movement.x != -1) or (snakeHead_pos.x>= width-cell_size and movement.x != 1))):
                 snakeHead_pos.x += movement.x * cell_size
                 snakeHead_pos.x = int(snakeHead_pos.x / cell_size) * cell_size
             else:
-                running=False
-            if((snakeHead_pos.y >0 and snakeHead_pos.y < height-50) or ((snakeHead_pos.y<=50 and movement.y != -1) or (snakeHead_pos.y>= height-50 and movement.y != 1))):    
+                 running=False
+            if((snakeHead_pos.y >0 and snakeHead_pos.y < height-cell_size) or ((snakeHead_pos.y<=cell_size and movement.y != -1) or (snakeHead_pos.y>= height-cell_size and movement.y != 1))):    
                 snakeHead_pos.y += movement.y * cell_size
                 snakeHead_pos.y = int(snakeHead_pos.y / cell_size) * cell_size
             else:
                 running=False
+                    
+            #reset bufferedKeys
+            if len(bufferedKeys)>0:
+                bufferedKeys.pop()
             
-                #error if you do up/down and then immediatley right/left before it updates
             #reset frame_counter
             frame_counter=0
         
