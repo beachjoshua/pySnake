@@ -49,7 +49,7 @@ if __name__ == "__main__":
     running = True
 
     #runtime vars
-    fps = 30
+    fps = 60
     last_key = None
     frame_counter=0
     bufferedKeys = []
@@ -78,7 +78,8 @@ if __name__ == "__main__":
         #keys = pygame.key.get_pressed()
             
         frame_counter+=1
-        if(frame_counter>=4):
+        ##################################
+        if(frame_counter>=8):
         
             #for key in (pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d):
                 #if keys[key]:
@@ -127,6 +128,7 @@ if __name__ == "__main__":
             
             #reset frame_counter
             frame_counter=0
+        ######################################
         
         screen.fill("black")
         
