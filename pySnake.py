@@ -43,28 +43,39 @@ def checkAppleCoords(x, y, snakeBody, snakeHead, cell_size, width, height):
 if __name__ == "__main__":
     #initializing window
     pygame.init()
-    width, height = 900, 900
+    width, height = 630, 700
     screen = pygame.display.set_mode((width,height))
     clock = pygame.time.Clock()
     running = True
-
+    pygame.display.set_caption("pySnake")
+    
+    #initialize sound
+    pygame.mixer.init()
+    biteSound = pygame.mixer.Sound("biteSoundEffect.wav")
+    
     #runtime vars
-    fps = 30
+    fps = 60
     last_key = None
     frame_counter=0
     bufferedKeys = []
 
     #snake vars
     speed = 5
-    cell_size = 100
-    snakeHead_pos = pygame.Vector2(300, 400)
+    cell_size = 70
+    snakeHead_pos = pygame.Vector2(cell_size*3, cell_size*5)
     movement = pygame.Vector2(0, 0)
-    body = [pygame.Vector2(100,400), pygame.Vector2(200, 400)]
+    body = [pygame.Vector2(cell_size*2, cell_size*5), pygame.Vector2(cell_size, cell_size*5)]
     #player_rect = pygame.Rect(player_pos.x, player_pos.y, cell_size, cell_size)
 
     #apple vars
-    apple_pos = pygame.Vector2(700, 400)
-
+    apple_pos = pygame.Vector2(cell_size*6, cell_size*5)
+    
+    #initialize font
+    pygame.font.init()
+    font = pygame.font.Font(None, cell_size)
+    scoreVal = 0
+    
+    #Main loop
     while running:
         clock.tick(fps)
         
@@ -78,7 +89,7 @@ if __name__ == "__main__":
         #keys = pygame.key.get_pressed()
             
         frame_counter+=1
-        if(frame_counter>=4):
+        if(frame_counter>=10):
         
             #for key in (pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d):
                 #if keys[key]:
@@ -115,7 +126,7 @@ if __name__ == "__main__":
                 snakeHead_pos.x = int(snakeHead_pos.x / cell_size) * cell_size
             else:
                  running=False
-            if((snakeHead_pos.y >0 and snakeHead_pos.y < height-cell_size) or ((snakeHead_pos.y<=cell_size and movement.y != -1) or (snakeHead_pos.y>= height-cell_size and movement.y != 1))):    
+            if((snakeHead_pos.y >cell_size and snakeHead_pos.y < height) or ((snakeHead_pos.y<=cell_size and movement.y != -1) or (snakeHead_pos.y>= height-cell_size and movement.y != 1))):    
                 snakeHead_pos.y += movement.y * cell_size
                 snakeHead_pos.y = int(snakeHead_pos.y / cell_size) * cell_size
             else:
@@ -128,13 +139,14 @@ if __name__ == "__main__":
             #reset frame_counter
             frame_counter=0
         
+        #reset screen
         screen.fill("black")
         
         #drawing grid (can delete later)
         for x in range(0, width, cell_size):
-            pygame.draw.line(screen, (255, 255, 255), (x, 0), (x, height))
+            pygame.draw.line(screen, "white", (x, cell_size), (x, height))
         for y in range(0, height, cell_size):
-            pygame.draw.line(screen, (255, 255, 255), (0, y), (width, y))
+            pygame.draw.line(screen, "white", (0, y), (width, y))
         
         #update snake rect
         snakeHead_rect = pygame.Rect(snakeHead_pos.x, snakeHead_pos.y, cell_size, cell_size)
@@ -152,6 +164,7 @@ if __name__ == "__main__":
         
         #if snake eats apple, grow snake
         if(appleCollision):
+            biteSound.play()
             body.append(pygame.Vector2(body[-1]))
             
             #make these values random and not equal to player_pos
@@ -165,6 +178,12 @@ if __name__ == "__main__":
             
             apple_rect = pygame.Rect(apple_pos.x, apple_pos.y, cell_size, cell_size)
             pygame.draw.rect(screen, "red", apple_rect)
+            
+            scoreVal+=1
+        
+        #display score
+        scoreText = font.render(f"Score: {scoreVal}", True, "white")
+        screen.blit(scoreText, (0,cell_size/3))
         
         pygame.display.flip()
         
