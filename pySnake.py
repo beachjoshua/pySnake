@@ -49,7 +49,7 @@ if __name__ == "__main__":
     running = True
 
     #runtime vars
-    fps = 60
+    fps = 30
     last_key = None
     frame_counter=0
     bufferedKeys = []
@@ -57,9 +57,9 @@ if __name__ == "__main__":
     #snake vars
     speed = 5
     cell_size = 100
-    snakeHead_pos = pygame.Vector2(150, 400)
+    snakeHead_pos = pygame.Vector2(300, 400)
     movement = pygame.Vector2(0, 0)
-    body = [pygame.Vector2(100,400), pygame.Vector2(50, 400)]
+    body = [pygame.Vector2(100,400), pygame.Vector2(200, 400)]
     #player_rect = pygame.Rect(player_pos.x, player_pos.y, cell_size, cell_size)
 
     #apple vars
@@ -78,8 +78,7 @@ if __name__ == "__main__":
         #keys = pygame.key.get_pressed()
             
         frame_counter+=1
-        ##################################
-        if(frame_counter>=8):
+        if(frame_counter>=4):
         
             #for key in (pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d):
                 #if keys[key]:
@@ -128,7 +127,6 @@ if __name__ == "__main__":
             
             #reset frame_counter
             frame_counter=0
-        ######################################
         
         screen.fill("black")
         
